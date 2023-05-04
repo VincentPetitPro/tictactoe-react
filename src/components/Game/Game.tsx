@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Board from "../Board/Board";
 import Order from "../Order/Order";
 
@@ -8,21 +8,25 @@ export default function Game() {
 	const currentSquares = history[currentMove];
 	const [ascendingOrder, setAscendingOrder] = useState(true);
 	const xIsNext = currentMove % 2 === 0;
-	const moves = history.map((_squares, move) => {
-		let description;
-		if (move === history.length - 1) {
-			description = "You are at move #" + move;
-		} else if (move > 0) {
-			description = "Go to move #" + move;
-		} else {
-			description = "Go to game start";
-		}
-		return (
-			<li key={move}>
-				<button onClick={() => jumpTo(move)}>{description}</button>
-			</li>
-		);
-	});
+	const moves = useMemo(() => {
+		const moves = history.map((_squares, move) => {
+			let description;
+			if (move === history.length - 1) {
+				description = "You are at move #" + move;
+			} else if (move > 0) {
+				description = "Go to move #" + move;
+			} else {
+				description = "Go to game start";
+			}
+			return (
+				<li key={move}>
+					<button onClick={() => jumpTo(move)}>{description}</button>
+				</li>
+			);
+		});
+
+		return ascendingOrder ? moves : moves.reverse();
+	}, [history, ascendingOrder]);
 
 	function handlePlay(nextSquares: string[]) {
 		const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
@@ -45,7 +49,7 @@ export default function Game() {
 			</div>
 			<div className="game-info">
 				<Order order={ascendingOrder} onOrderClick={changeOrder} />
-				{ascendingOrder ? <ol>{moves}</ol> : <ol reversed>{moves.reverse()}</ol>}
+				{ascendingOrder ? <ol>{moves}</ol> : <ol reversed>{moves}</ol>}
 			</div>
 		</div>
 	);
