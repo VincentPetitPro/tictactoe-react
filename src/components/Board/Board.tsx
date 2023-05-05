@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Square from "../Square/Square";
 interface BoardProps {
 	xIsNext: boolean;
@@ -6,6 +7,8 @@ interface BoardProps {
 }
 
 export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
+	const winningSquares = [] as number[];
+
 	// useMemo
 	function calculateWinner(squares: string[]): string | null {
 		const LINES = [
@@ -21,6 +24,7 @@ export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
 		for (let i = 0; i < LINES.length; i++) {
 			const [a, b, c] = LINES[i];
 			if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+				winningSquares.push(...[a, b, c]);
 				return squares[a];
 			}
 		}
@@ -28,7 +32,6 @@ export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
 	}
 
 	const handleClick = (index: number) => {
-		console.log("index", index);
 		if (squares[index] || calculateWinner(squares)) return;
 		const nextSquares = [...squares];
 		if (xIsNext) {
@@ -39,6 +42,7 @@ export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
 		onPlay(nextSquares, index);
 	};
 
+	// Use memo
 	const getStatus = (winner: string | null, currentMove: number) => {
 		if (winner) {
 			return `Winner: ${winner}`;
@@ -50,14 +54,14 @@ export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
 	};
 
 	const winner = calculateWinner(squares);
-	console.log(squares);
 	const status = getStatus(winner, squares.filter(Boolean).length);
 	const squaresJSX = [0, 1, 2].map((row) => (
 		<div className="board-row" key={row}>
 			{[0, 1, 2].map((col) => (
 				<Square
-					key={col}
+					key={row * 3 + col}
 					marker={squares[row * 3 + col]}
+					isWinningSquare={winner !== null && winningSquares.includes(row * 3 + col)}
 					onSquareClick={() => handleClick(row * 3 + col)}
 				/>
 			))}

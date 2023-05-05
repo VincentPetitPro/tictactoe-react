@@ -42,7 +42,6 @@ export default function Game() {
 		const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
 		setHistory(nextHistory);
 
-		console.log("nextSquares", nextSquares);
 		const nextCoordinates = [...coordinates.slice(0, currentMove), calculateCoordinates(index)];
 		setCoordinates(nextCoordinates);
 
