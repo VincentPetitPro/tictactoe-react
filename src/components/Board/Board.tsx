@@ -27,6 +27,7 @@ export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
 	}
 
 	const handleClick = (index: number) => {
+		console.log("index", index);
 		if (squares[index] || calculateWinner(squares)) return;
 		const nextSquares = [...squares];
 		if (xIsNext) {
@@ -34,7 +35,7 @@ export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
 		} else {
 			nextSquares[index] = "O";
 		}
-		onPlay(nextSquares);
+		onPlay(nextSquares, index);
 	};
 
 	const winner = calculateWinner(squares);
