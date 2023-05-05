@@ -2,10 +2,11 @@ import Square from "../Square/Square";
 interface BoardProps {
 	xIsNext: boolean;
 	squares: string[];
-	onPlay: (nextSquares: string[]) => void;
+	onPlay: (nextSquares: string[], index: number) => void;
 }
 
 export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
+	// useMemo
 	function calculateWinner(squares: string[]): string | null {
 		const LINES = [
 			[0, 1, 2],
@@ -38,8 +39,19 @@ export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
 		onPlay(nextSquares, index);
 	};
 
+	const getStatus = (winner: string | null, currentMove: number) => {
+		if (winner) {
+			return `Winner: ${winner}`;
+		} else if (currentMove === 9) {
+			return "Draw";
+		} else {
+			return `Next player: ${xIsNext ? "X" : "O"}`;
+		}
+	};
+
 	const winner = calculateWinner(squares);
-	const status = winner ? `Winner: ${winner}` : `Next player: ${xIsNext ? "X" : "O"}`;
+	console.log(squares);
+	const status = getStatus(winner, squares.filter(Boolean).length);
 	const squaresJSX = [0, 1, 2].map((row) => (
 		<div className="board-row" key={row}>
 			{[0, 1, 2].map((col) => (
